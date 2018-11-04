@@ -1,5 +1,4 @@
 from random import random
-import numpy as np
 
 # initialising a neural network
 def init_network(inputs, hid, outputs):
@@ -22,7 +21,7 @@ def transfer(activation):
         return 1
     else: return 0
 
-def forward_prop(network,row):  # Forward Propagation....calculating the transfer activity of neuron and passing it to the neurons in next layer.
+def forwardProp(network, row):  # Forward Propagation....calculating the transfer activity of neuron and passing it to the neurons in next layer.
     inputs = row
     for layer in network:
         new_inputs = []
@@ -62,7 +61,7 @@ def backward_prop_error(network, expected):
             neuron['delta'] = errors[j] * transfer_der(neuron['output'])
 
 
-def update_weights(network, row, l_rate):
+def updateWeight(network, row, l_rate):
     for i in range(len(network)):
         inputs = row[:-1]
         if i != 0:
@@ -74,31 +73,29 @@ def update_weights(network, row, l_rate):
 
 # Make a prediction with a network
 def predict(network, row):
- outputs = forward_prop(network, row)
+ outputs = forwardProp(network, row)
  return outputs.index(max(outputs))
 
-def train_network(network, train, l_rate, n_outputs):
+def training(network, train, l_rate, n_outputs):
     n_epoch = 999
     for epoch in range(n_epoch):
         sum_error = 0
         for row in train:
-            outputs = forward_prop(network, row)
+            outputs = forwardProp(network, row)
             expected = [0 for i in range(n_outputs)]
             expected[row[-1]] = 1
             sum_error += sum([(expected[i] - outputs[i]) ** 2 for i in range(len(expected))])
             backward_prop_error(network, expected)
-            update_weights(network, row, l_rate)
+            updateWeight(network, row, l_rate)
         print('>epoch=%d, lrate=%.3f, error=%.3f' % (epoch+1, l_rate, sum_error))
         for row in dataset:
             prediction = predict(network, row)
-            print('Expected=%d, Got=%d' % (row[-1], prediction))
+            print('Desired output=%d, Actual output=%d' % (row[-1], prediction))
         if sum_error == 0 :
             break
 
-inpdata = input("Pilih \n1.XOR 2.OR 3.AND 4.ParityBit : ")
+inpdata = input("Choose \n1.XOR 2.OR 3.AND 4.ParityBit : ")
 inpdata = int(inpdata)
-outputSize = input("Jumlah Output : ")
-outputSize = int(outputSize)
 
 lrate = input("Learning Rate : ")
 lrate = float(lrate)
@@ -106,29 +103,29 @@ lrate = float(lrate)
 if inpdata == 1:
     # Xor data
     dataset = [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 0]]
-    n_inputs = len(dataset[0]) - 1  # Third value in the dataset entry is for biases.
+    inputSize = len(dataset[0]) - 1  # Third value in the dataset entry is for biases.
     n_outputs = len(set(row[-1] for row in dataset))
 
 elif inpdata == 2:
     # or data
     dataset = [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]]
-    n_inputs = len(dataset[0]) - 1  # Third value in the dataset entry is for biases.
+    inputSize = len(dataset[0]) - 1  # Third value in the dataset entry is for biases.
     n_outputs = len(set(row[-1] for row in dataset))
 
 elif inpdata == 3:
     # and data [[0,0,0],[0,1,0],[1,0,0],[1,1,1]]
     dataset = [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]]
-    n_inputs = len(dataset[0]) - 1  # Third value in the dataset entry is for biases.
+    inputSize = len(dataset[0]) - 1  # Third value in the dataset entry is for biases.
     n_outputs = len(set(row[-1] for row in dataset))
 
 elif inpdata == 4:
     dataset = [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]]
 
 
-hidden_l = int(input('Jumlah hidden Layer : '))
+hidden_l = int(input('Number of hidden layer : '))
 threshold = float(input('Threshold : '))
-network = init_network(n_inputs, hidden_l, n_outputs)
-train_network(network, dataset, lrate, n_outputs)
+net = init_network(inputSize, hidden_l, n_outputs)
+training(net, dataset, lrate, n_outputs)
 
-for layer in network:
+for layer in net:
     print(layer)
