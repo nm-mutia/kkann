@@ -1,8 +1,5 @@
 import numpy as np
-#from IPython.display import Image,display
-import matplotlib.pyplot as plt
-
-
+#import matplotlib.pyplot as plt
 
 def print_network(net):
     for i,layer in enumerate(net,1):
@@ -11,8 +8,8 @@ def print_network(net):
             print("neuron {} :".format(j),neuron)
 
 
-def initialize_network(inputSize, outputSize):
-    input_neurons = inputSize #len(X[0])
+def initialize_network(X, outputSize):
+    input_neurons = len(X[0])
     hidden_neurons = input_neurons + 1
     output_neurons = outputSize #2
 
@@ -36,8 +33,8 @@ def activate_sigmoid(sum):
     return (1/(1+np.exp(-sum)))
 
 
-def forward_propagation(net, input):
-    row = input
+def forward_propagation(net, inputhai):
+    row = inputhai
     for layer in net:
         prev_input = np.array([])
         for neuron in layer:
@@ -100,63 +97,68 @@ def training(net, epochs, lrate, n_outputs):
             sum_error += sum([(expected[j] - outputs[j]) ** 2 for j in range(len(expected))])
             back_propagation(net, row, expected)
             updateWeights(net, row, 0.05)
-        if epoch % 10000 == 0:
+        if epoch % 100 == 0:
             print('>epoch=%d,error=%.3f' % (epoch, sum_error))
             errors.append(sum_error)
     return errors
 
-inpdata = input("Pilih \n1.XOR 2.OR 3.AND 4.ParityBit :")
+inpdata = input("Pilih \n1.XOR 2.OR 3.AND 4.ParityBit : ")
 inpdata = int(inpdata)
 inputSize = input("Panjang Input : ")
 inputSize = int(inputSize)
 inx = input("Jumlah Input : ")
 inx = int(inx)
 inputx = []
-inx2 = 0
 
 for i in range(inx):
     row_list=[]
     for j in range(inputSize):
-        print("[",i,"][",j,"] = ")
+        print("[",i,"][",j,"] =")
         row_list.append(int(input()))
     inputx.append(row_list)
     print(inputx[i])
 
 print(inputx)
-
-if inpdata == 1:
-    #Xor data
-    XORdata=np.array(inputx)
-    X=XORdata[:,0:2]
-    y=XORdata[:,-1]
-    
-elif inpdata == 2:
-    #or data
-    ORdata=np.array(inputx)
-    X=ORdata[:,0:2]
-    y=ORdata[:,-1]
-    
-elif inpdata == 3:
-    #and data [[0,0,0],[0,1,0],[1,0,0],[1,1,1]]
-    ANDdata=np.array(inputx)
-    X = ANDdata[:,0:2]
-    y = ANDdata[:,-1]
-        
+       
 outputSize = input("Jumlah Output : ")
 outputSize = int(outputSize)
 
+lrate=input("Learning Rate : ")
+lrate = float(lrate)
 
-net = initialize_network(inputSize, outputSize)
+if inpdata == 1:
+    #Xor data
+    XORdata = np.array(inputx)
+    X = XORdata[:,0:inputSize-1]
+    y = XORdata[:,-1]
+    
+elif inpdata == 2:
+    #or data
+    ORdata = np.array(inputx)
+    X = ORdata[:,0:inputSize-1]
+    y = ORdata[:,-1]
+    
+elif inpdata == 3:
+    #and data [[0,0,0],[0,1,0],[1,0,0],[1,1,1]]
+    ANDdata = np.array(inputx)
+    X = ANDdata[:,0:inputSize-1]
+    y = ANDdata[:,-1]
+    
+elif inpdata == 4:
+    PARdata = np.array([inputx])
+    X = PARdata[:, 0:2]
+    y = PARdata[:, -1]
+
+    
+net = initialize_network(X,outputSize)
 print_network(net)
+errors = training(net, 100, lrate, outputSize)
 
-
-errors = training(net,100000, 0.05,2)
-
-epochs = [0,1,2,3,4,5,6,7,8,9]
-plt.plot(epochs,errors)
-plt.xlabel("epochs in 10000's")
-plt.ylabel('error')
-plt.show()
+#epochs = [0,1,2,3,4,5,6,7,8,9]
+#plt.plot(epochs,errors)
+#plt.xlabel("epochs in 10's")
+#plt.ylabel('error')
+#plt.show()
 
 # Make a prediction with a network
 def predict(network, row):
