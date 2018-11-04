@@ -115,29 +115,30 @@ inputx = []
 inx2 = 0
 
 for i in range(inx):
+    row_list=[]
     for j in range(inputSize):
         print("[",i,"][",j,"] = ")
-        inx2 = input(inx2)
-        inx2 = int(inx2)
-        inputx.append(inx2)
-    
+        row_list.append(int(input()))
+    inputx.append(row_list)
+    print(inputx[i])
+
 print(inputx)
 
 if inpdata == 1:
     #Xor data
-    XORdata=np.array([inputx])
+    XORdata=np.array(inputx)
     X=XORdata[:,0:2]
     y=XORdata[:,-1]
     
 elif inpdata == 2:
     #or data
-    ORdata=np.array([inputx])
+    ORdata=np.array(inputx)
     X=ORdata[:,0:2]
     y=ORdata[:,-1]
     
 elif inpdata == 3:
     #and data [[0,0,0],[0,1,0],[1,0,0],[1,1,1]]
-    ANDdata=np.array([inputx])
+    ANDdata=np.array(inputx)
     X = ANDdata[:,0:2]
     y = ANDdata[:,-1]
         
