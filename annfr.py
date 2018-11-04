@@ -8,9 +8,9 @@ def print_network(net):
             print("neuron {} :".format(j),neuron)
 
 
-def initialize_network(X, outputSize):
+def initialize_network(X, outputSize, hidl):
     input_neurons = len(X[0])
-    hidden_neurons = input_neurons + 1
+    hidden_neurons = hidl #input_neurons + 1
     output_neurons = outputSize #2
 
     n_hidden_layers = 1
@@ -142,6 +142,7 @@ print(inputx)
 outputSize = int(input("Jumlah Output : "))
 lrate = float(input("Learning Rate : "))
 threshold = float(input("Threshold : "))
+hidl = int(input("Jumlah Hidden Layer : "))
 tester = []
 
 print("Prediksi Input : ")
@@ -172,7 +173,7 @@ elif inpdata == 4:
     y = PARdata[:,-1]
 
     
-net = initialize_network(X,outputSize)
+net = initialize_network(X,outputSize,hidl)
 print_network(net)
 #errors = 
 training(net, 10, lrate, outputSize)
