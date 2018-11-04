@@ -23,10 +23,14 @@ def initialize_network(X, outputSize, hidl):
 
         hidden_layer = [{'weights': np.random.uniform(size=input_neurons)} for i in range(hidden_neurons)]
         net.append(hidden_layer)
-
-    output_layer = [{'weights': np.random.uniform(size=hidden_neurons)} for i in range(output_neurons)]
-    net.append(output_layer)
-
+    
+    if hidl > 0:
+        output_layer = [{'weights': np.random.uniform(size=hidden_neurons)} for i in range(output_neurons)]
+        net.append(output_layer)
+    elif hidl == 0:
+        output_layer = [{'weights': np.random.uniform(size=input_neurons)} for i in range(output_neurons)]
+        net.append(output_layer)
+    
     return net
 
 def activate(weights, inputs):
@@ -44,7 +48,10 @@ def activate_step(sumi):
 
 def forward_propagation(net, inputhai):
     row = inputhai
+
     for layer in net:
+        #if hidl == 0:
+         #    continue
         prev_input = np.array([])
         for neuron in layer:
             sumi = neuron['weights'].T.dot(row)
@@ -142,7 +149,7 @@ print(inputx)
 outputSize = int(input("Jumlah Output : "))
 lrate = float(input("Learning Rate : "))
 threshold = float(input("Threshold : "))
-hidl = int(input("Jumlah Hidden Layer : "))
+hidl = int(input("Jumlah Hidden Neuron : "))
 tester = []
 
 print("Prediksi Input : ")
