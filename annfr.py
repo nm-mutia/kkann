@@ -29,8 +29,15 @@ def initialize_network(X, outputSize):
 
     return net
 
-def activate_step(sum):
-    if sum >= threshold:
+def activate(weights, inputs):
+    activation = weights[-1]  # Added the neuron bias beforehand. -1 is used for last element of an array.
+    for i in range(len(weights) - 1):  # Taking only first two weights as third one is the bias, which has been alredy added.
+        activation += weights[i] * inputs[i]  # Calculating the activation of the neuron
+    return activation - threshold
+
+
+def activate_step(sumi):
+    if (sumi >= threshold).all():
         return 1
     else:
         return 0
@@ -40,9 +47,10 @@ def forward_propagation(net, inputhai):
     for layer in net:
         prev_input = np.array([])
         for neuron in layer:
-            sum = neuron['weights'].T.dot(row)
-            sum = sum - threshold
-            result = activate_step(sum)
+            sumi = neuron['weights'].T.dot(row)
+            sumi = sumi - threshold
+            #activation = activate(neuron['weights'], row)
+            result = activate_step(sumi)
             neuron['result'] = result
 
             prev_input = np.append(prev_input, [result])
@@ -72,8 +80,8 @@ def back_propagation(net, row, expected):
 
         for j in range(len(layer)):
             neuron = layer[j]
-            neuron['delta'] = errors[j] * stepDerivative(neuron['result'])
-            #neuron['delta'] = y[j] - neuron['result'] 
+            #neuron['delta'] = errors[j] * stepDerivative(neuron['result'])
+            neuron['delta'] = y[j] - neuron['result'] 
 
 def updateWeights(net, inputhai, lrate):
     for i in range(len(net)):
@@ -85,6 +93,10 @@ def updateWeights(net, inputhai, lrate):
             for j in range(len(inputs)):
                 neuron['weights'][j] += lrate * neuron['delta'] * inputs[j]
 
+# Make a prediction with a network
+def predict(network, row):
+    outputs = forward_propagation(network, row)
+    return outputs
 
 def training(net, epochs, lrate, n_outputs):
     errors = []
@@ -95,18 +107,23 @@ def training(net, epochs, lrate, n_outputs):
 
             expected = [0.0 for i in range(n_outputs)]
             expected[y[i]] = 1
-
+            
             sum_error += sum([(expected[j] - outputs[j]) ** 2 for j in range(len(expected))])
             back_propagation(net, row, expected)
-            updateWeights(net, row, 0.05)
+            updateWeights(net, row, lrate)
         #if epoch:
-        print('>epoch=%d,error=%.3f' % (epoch, sum_error))
+        print('>epoch=%d, error=%.3f' % (epoch, sum_error))
         errors.append(sum_error)
+        for j, row in enumerate(X):
+            prediction = predict(net, row)
+            print('Desired output=%d, Actual output=%d' % (y[j], np.argmax(prediction)))
+        if sum_error == 0:
+            break
     return errors
 
-inpdata = input("Pilih \n1.XOR 2.OR 3.AND 4.ParityBit : ")
+inpdata = input("Choose \n1.XOR 2.OR 3.AND 4.ParityBit : ")
 inpdata = int(inpdata)
-inputSize = input("Panjang Input : ")
+inputSize = input("Length per-input : ")
 inputSize = int(inputSize)
 inx = input("Jumlah Input : ")
 inx = int(inx)
@@ -157,18 +174,9 @@ elif inpdata == 4:
     
 net = initialize_network(X,outputSize)
 print_network(net)
-errors = training(net, 10, lrate, outputSize)
+#errors = 
+training(net, 10, lrate, outputSize)
 
-#epochs = [0,1,2,3,4,5,6,7,8,9]
-#plt.plot(epochs,errors)
-#plt.xlabel("epochs in 10's")
-#plt.ylabel('error')
-#plt.show()
-
-# Make a prediction with a network
-def predict(network, row):
-    outputs = forward_propagation(net, row)
-    return outputs
 
 pred = predict(net,np.array(tester))
 output = np.argmax(pred)
@@ -176,3 +184,8 @@ print("Output = ", output)
 
 print_network(net)
 
+#epochs = [0,1,2,3,4,5,6,7,8,9]
+#plt.plot(epochs,errors)
+#plt.xlabel("epochs in 10's")
+#plt.ylabel('error')
+#plt.show()
