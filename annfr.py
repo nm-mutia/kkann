@@ -12,8 +12,11 @@ def initialize_network(X, outputSize, hidl):
     input_neurons = len(X[0])
     hidden_neurons = hidl #input_neurons + 1
     output_neurons = outputSize #2
-
-    n_hidden_layers = 1
+    
+    if hidl == 0:
+        n_hidden_layers = 0
+    else:
+        n_hidden_layers = 1
 
     net = list()
 
@@ -124,7 +127,7 @@ def training(net, epochs, lrate, n_outputs):
         for j, row in enumerate(X):
             prediction = predict(net, row)
             print('Desired output=%d, Actual output=%d' % (y[j], np.argmax(prediction)))
-        if sum_error == 0:
+        if sum_error == 0.000:
             break
     return errors
 
